@@ -1,0 +1,510 @@
+{% if current %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+    <div class="emp-form-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="emp-form">
+                    <h2 class="text-center">Personal Information</h2>
+                </div>
+            </div>
+        </div>
+
+        <form action="{% url 'Login:saveprofile' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="full name">Full Name</label>
+                    <input type="text" name="fullname" placeholder="First Name" class="form-control" value="{{ current.full_name }}">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="image">Photo</label>
+                    <input type="file" name="docfile" placeholder="Click here to upload" class="form-control">
+                    {% if current.profile.photo_upload %}
+                        <img src="{{ current.profile.photo_upload.url }}">
+                    {% else %}
+                        <img src="">
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+
+            <div class="row label-space">
+                <div class="col-md-6">
+                    <label for="Dob">Date of Birth</label>
+                    <input type="date" name="dateofbirth" placeholder="Date of Birth" class="form-control" value="{{ current.profile.date_of_birth | date:'Y-m-d' }}">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="email">Email id</label>
+                    <input type="email" name="mailing_address" placeholder="Email" class="form-control" value="{{ current.User.email }}">
+                </div>
+
+
+            </div>
+
+
+            <div class="row label-space">
+                <div class="col-md-6">
+                    <label for="address">Present Address</label>
+                    <textarea  id="present_address" rows="4" name="present_address" class="form-control" >{{ current.profile.present_address }}</textarea>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="pincode">Pin code</label>
+                    <input type="number" placeholder="Pin code" name="pincode" value="{{ current.profile.pincode }}" class="form-control" >
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <div class="row label-space">
+                <div class="col-md-12">
+                    <span>Gender:</span>
+
+                    <label class="radio-inline"><input type="radio" name="optradio" value="male" {% if current.profile.gender == "male" %}CHECKED{% endif %}>Male</label>
+                    <label class="radio-inline"><input type="radio" name="optradio" value="female" {% if current.profile.gender == "female" %}CHECKED{% endif %}>Female</label>
+
+                </div>
+            </div>
+            <script type="text/javascript">
+
+                function EnableDisableTextBox1()
+                {
+                    var checkbox=document.getElementById("check1");
+                    var present=document.getElementById("present_address");
+                    var permanent=document.getElementById("permanent_address");
+                    if(checkbox.checked==true)
+                    {
+                        permanent.disabled=true;
+                        permanent.value=present.value;
+                    }
+                    else if(checkbox.checked==false)
+                    {
+                        permanent.disabled=false;
+                    }
+                }
+
+
+            </script>
+
+            <div class="row label-space">
+                <div class="col-md-12">
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="check1" onclick="EnableDisableTextBox1(this)" name="check1" {% if current.profile.present_address == current.profile.permanent_address %}CHECKED{% endif %}/>Same as Present address</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row label-space">
+                <div class="col-md-6">
+                    <label for="address">Permanent Address</label>
+                    <textarea  id="permanent_address" rows="4" name="permanent_address" class="form-control">{{ current.profile.permanent_address }}</textarea>
+                </div>
+
+
+
+
+
+
+            </div>
+
+        <h2 class="text-center">Qualification</h2>
+
+
+<script type="text/javascript">
+    a=1;
+    function addinput(obj)
+    {
+        document.getElementById('qualification').innerHTML+='<tr id="'+ ++a +'">'+
+                                                    '<td><input type="text" name="course" class="form-control" value="" placeholder="Enter Here.."></td>'+
+                                                    '<td><input type="text" name="university" class="form-control" value="" placeholder="Enter Here.."></td>'+
+                                                    '<td><label for="">From</label><select name="fromyear">{% for i in current.range %}<option value="{{ i }}">{{ i }}</option>{% endfor %}</select><label for="" >To</label><select name="toyear">{% for i in current.range %}<option value="{{ i }}">{{ i }}</option>{% endfor %}</select><td>'+
+                                                    '<td><input type="text" name="percentage" value=""></td>'+
+                                                    '<td><input type="button" name="remove" value="remove" onclick="deleterow(this)"></td></tr>';
+    }
+    function deleterow(obj)
+    {
+        var i=obj.parentNode.parentNode.rowIndex;
+        document.getElementById('qualification').deleteRow(i);
+    }
+
+</script>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table"  id="qualification">
+                    <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>University</th>
+                        <th>Year</th>
+                        <th>     </th>
+                        <th>Grade</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+					{% for j in current.qualification %}
+                    <tr>
+                        <td><input type="text" name="course" class="form-control" value="{{ j. course }}" placeholder="Enter Here.."></td>
+                        <td><input type="text" name="university" class="form-control" value="{{ j.university }}" placeholder="Enter Here.."></td>
+                        <td><label for="">From</label><select name="fromyear">
+                                {% for i in current.range %}
+                                    <option value="{{ i }}" {% if value==j.from %}selected{% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="">To</label> <select name="toyear">
+                                {% for i in current.range %}
+                                    <option value="{{ i }}"{% if value==j.to %}selected{% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            </select></td>
+                        <td><input type="hidden"></td>
+                        <td><input type="text" name="percentage" value="{{ j.grade }}"></td>
+                    </tr>
+					{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<input type="button" name="add" value="add field" onclick="addinput(this)">
+
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center">Experience</h2>
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="checkbox">
+                    <label><input type="checkbox" id="checkexperience" name="check_experience" {% if current.checkforcerti != "" %}CHECKED {% endif %} onchange="EnableDisableexperience(this)"  >If Having Work Experience</label>
+                </div>
+            </div>
+
+        </div>
+
+            <script type="text/javascript">
+                function EnableDisableexperience(check)
+                {
+                    console.log(check.checked);
+
+                        document.getElementsByName("comapny").disabled=(check.checked);
+                        document.getElementsByName("designation").disabled=(check.checked);
+                        document.getElementsByName("profile").disabled=(check.checked);
+                        document.getElementsByName("from").disabled=(check.checked);
+                        document.getElementsByName("to").disabled=(check.checked);
+                        document.getElementsByName("ctc").disabled=(check.checked);
+
+
+                }
+            </script>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table" id="exp">
+                    <thead>
+                    <tr>
+                        <th>Company Name</th>
+                        <th>Designation</th>
+                        <th>Profile Details</th>
+                        <th>From To</th>
+                        <th>CTC</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+					{% for j in current.experience %}
+                    <tr>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.." id="company1" name="company" value="{{ j.company }}" ></td>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.." id="designation1" name="designation" value="{{ j.designation }}" ></td>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.." id="profile1" name="profile" value="{{ j.profile }}" ></td>
+                        <td><label for="">From</label><select name="from" id="from1" >
+                                {% for i in current.range %}
+                                    <option value="{{ i }}"{% if value==j.fromyear %}selected{% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="">To</label> <select name="to" id="to1" >
+                                {% for i in current.range %}
+                                    <option value="{{ i }}"{% if value==j.toyear %}selected{% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            </select></td>
+                        <td><input type="text" id="ctc1" name="ctc" value="{{ j.ctc }}" ></td>
+                    </tr>
+					{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<input type="button" name="add" value="add field" onclick="addexperience(this)">
+
+<script type="text/javascript">
+    b=1;
+    function addexperience(obj)
+    {
+        document.getElementById('exp').innerHTML+='<tr id="'+ ++b +'">'+
+                                                    '<td><input type="text" class="form-control" placeholder="Enter Here.." name="company" value="" ></td>'+
+                                                    '<td><input type="text" class="form-control" placeholder="Enter Here.." name="designation" value="" ></td>'+
+                                                    '<td><input type="text" class="form-control" placeholder="Enter Here.." name="profile" value="" ></td>'+
+                                                    '<td><label for="">From</label><select name="from" >{% for i in current.range %}<option value="{{ i }}">{{ i }}</option>{% endfor %}</select><label for="">To</label> <select name="to" >{% for i in current.range %}<option value="{{ i }}">{{ i }}</option>{% endfor %}</select></td>'+
+                                                    '<td><input type="text" name="ctc" value="" ></td>'+
+                                                    '<td><input type="button" name="remove" value="remove" onclick="deleteexperience(this)"></td></tr>';
+    }
+function deleteexperience(obj)
+{
+    var a=obj.parentNode.parentNode.rowIndex;
+    document.getElementById('exp').deleteRow(a);
+}
+
+
+</script>
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center">Family Background</h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Father</th>
+                        <th>Employment Details</th>
+                        <th>Contact / Phone</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.." name="father_name" value="{{ current.profile.father_name }}"></td>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.."name="father_employment" value="{{ current.profile.father_employment }}"></td>
+                        <td><input type="number" class="form-control" placeholder="Enter Here.."name="father_number" value="{{ current.profile.father_phone }}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Mother</th>
+                        <th>Employment Details</th>
+                        <th>Contact / Phone</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.."name="mother_name" value="{{ current.profile.mother_name }}"></td>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.."name="mother_employment" value="{{ current.profile.mother_employment }}"></td>
+                        <td><input type="number" class="form-control" placeholder="Enter Here.."name="mother_number" value="{{ current.profile.mother_phone }}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center">Bank Details</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="checkbox">
+                    <label><input type="checkbox" value="" id="checkforbank" name="check_bank" onchange="EnableDisablebank(this)">If any</label>
+                </div>
+            </div>
+        </div>
+   <script type="text/javascript">
+				function EnableDisablebank(obj)
+                {
+                    console.log(obj.checked)
+                    if(obj.checked)
+                    {
+                        document.getElementById("bank_name").disabled=(obj.checked);
+                        document.getElementById("branch").disabled=(obj.checked);
+                        document.getElementById("account_type").disabled=(obj.checked);
+                        document.getElementById("pan_number").disabled=(obj.checked);
+                    }
+                    else
+                    {
+                        document.getElementById("bank_name").disabled=(obj.checked);
+                        document.getElementById("branch").disabled=(obj.checked);
+                        document.getElementById("account_type").disabled=(obj.checked);
+                        document.getElementById("pan_number").disabled=(obj.checked);
+                    }
+                }
+            </script>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Bank Name</th>
+                        <th>Branch</th>
+                        <th>Account type</th>
+                        <th>Pan Card No.</th>
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><input type="text" class="form-control" id="bank_name" placeholder="Enter Here.." name="bank_name" value="{{ current.profile.bank_name }}" ></td>
+                        <td><input type="text" class="form-control" id="branch" placeholder="Enter Here.."name="bank_branch" value="{{ current.profile.bank_branch }}" ></td>
+                        <td><input type="text" class="form-control" id="account_type" placeholder="Enter Here.." name="account_type" value="{{ current.profile.bank_type }}" ></td>
+                        <td><input type="text" class="form-control" id="pan_number" placeholder="Enter Here.." name="pan_number" value="{{ current.profile.pan_number }}" ></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="checkbox">
+                    <label><input type="checkbox" id="checkforcerti" name="check_certi"  onchange="EnableDisablecerti(this)" {% if current.checkforcerti == True %}{% endif %}>Certification if any</label>
+                </div>
+            </div>
+        </div>
+		
+             <script type="text/javascript">
+                function EnableDisablecerti(obj)
+                {
+                    if(obj.checked)
+                    {
+                        document.getElementById("certi_course").disabled=(obj.checked);
+                        document.getElementById("certi_descp").disabled=(obj.checked);
+                        document.getElementById("certi_from").disabled=(obj.checked);
+                        document.getElementById("certi_to").disabled=(obj.checked);
+                        document.getElementById("certi_insti").disabled=(obj.checked);
+                    }
+                    else
+                    {
+                        document.getElementById("certi_course").disabled=(obj.checked);
+                        document.getElementById("certi_descp").disabled=(obj.checked);
+                        document.getElementById("certi_from").disabled=(obj.checked);
+                        document.getElementById("certi_to").disabled=(obj.checked);
+                        document.getElementById("certi_insti").disabled=(obj.checked);
+                    }
+                }
+            </script>
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table" id="certificate_column">
+                    <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Description</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Institute</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+					{% for j in current.certificate %}
+					<tr>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.." name="certi_course" id="certi_course" value="{{ j.course }}" ></td>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.." name="certi_descp" id="certi_descp" value="{{ j.descp }}" ></td>
+                        <td><label for=""></label> <select name="certi_from" id="certi_from" >
+                                {% for i in current.range %}
+                                    <option value="{{ i }}"{% if value==j.toyear %}selected{% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            </select></td>
+                        <td><label for=""></label> <select name="certi_to" id="certi_to" >
+                                {% for i in current.range %}
+                                    <option value="{{ i }}"{% if value==j.fromyear %}selected{% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            </select></td>
+                        <td><input type="text" class="form-control" placeholder="Enter Here.." name="certi_insti" id="certi_insti"  value="{{ j.institute }}" ></td>
+                    </tr>
+					{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<input type="button" onclick="addmorecerti(this)" value="add certi" name="addcerti">
+		<script type="text/javascript">
+		cer=1;
+		function addmorecerti(obj)
+		{
+			document.getElementById("certificate_column").innerHTML+='<tr id="'+ ++cer +'">'
+															  +'<td><input type="text" class="form-control" placeholder="Enter Here.." name="certi_course"></td>'
+															  +'<td><input type="text" class="form-control" placeholder="Enter Here.." name="certi_descp" ></td>'
+															  +'<td><label for=""></label>'
+															  +'<select name="certi_from">'
+															  +'{% for i in current.range %}<option value="{{ i }}">{{ i }}</option>{% endfor %}'
+															  +'</select></td>'
+															  +'<td><label for=""></label>'
+															  +' <select name="certi_to" id="certi_to">'
+															  +'{% for i in current.range %}<option value="{{ i }}">{{ i }}</option>{% endfor %}'
+															  +'</select></td>'
+															  +'<td><input type="text" class="form-control" placeholder="Enter Here.." name="certi_insti"></td>'
+															  +'<td><input type="button" onclick="deletecerti(this)" value="remove"></td>'
+															  +'</tr>';
+		}
+		
+		function deletecerti(obj)
+		{
+			var a=obj.parentNode.parentNode.rowIndex;
+			document.getElementById('certificate_column').deleteRow(a);	
+		}
+		</script>
+		
+    <br>
+	<br>
+	<br>
+	<input type="submit" value="submit" name="submit">
+
+
+
+
+
+<a href="{% url 'Login:logout' %}">LOGOUT</a>
+<a href="{% url 'Login:changepassword' %}">CHANGE PASSWORD</a>
+</form>
+    </div> <!--end emp-form-wrapper here-->
+</div> <!--end container here-->
+
+</body>
+</html>
+
+{% endif %}
+{% if error_message %}
+{{ error_message }}
+    <a href="{% url 'Login:home_page' %}">GO BACK</a>
+
+{% endif %}
