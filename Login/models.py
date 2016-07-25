@@ -3,6 +3,7 @@ from django.db import models
 from PIL import Image
 
 
+
 class profile(models.Model):
     user = models.ForeignKey(User)
    
